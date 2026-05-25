@@ -24,6 +24,7 @@
 // #define DISPLAY_TYPE GDEQ031T10    // 240x320, 3.1"
 // #define DISPLAY_TYPE GDEH0213BN    // 250x122, 2.13"
 // #define DISPLAY_TYPE GDEQ042T81    // 400x300, 4.2"
+// #define DISPLAY_TYPE GDEH0576T81   // 920x680, 5.76"
 // #define DISPLAY_TYPE GDEY0579T93   // 792x272, 5.79"
 // #define DISPLAY_TYPE GDEQ0583T31   // 648x480, 5.83"
 // #define DISPLAY_TYPE GDEW0583T8    // 648x480, 5.83"
@@ -37,6 +38,7 @@
 // Grayscale
 // #define DISPLAY_TYPE GDEY0154D67   // 200x200, 1.54"
 // #define DISPLAY_TYPE GDEY0213B74   // 128x250, 2.13"
+// #define DISPLAY_TYPE GDEW029T5D    // 128x296, 2.9"
 // #define DISPLAY_TYPE GDEW042T2_G   // 400x300, 4.2"
 // #define DISPLAY_TYPE GDEY042T81    // 400x300, 4.2"
 // #define DISPLAY_TYPE GDEQ0426T82   // 800x480, 4.26"
@@ -143,60 +145,62 @@ static constexpr const char COLOR_TYPE_STRING[] = XSTR(COLOR_TYPE);
   #define DT_GDEQ031T10 5
   #define DT_GDEH0213BN 6
   #define DT_GDEQ042T81 7
-  #define DT_GDEY0579T93 8
-  #define DT_GDEQ0583T31 9
-  #define DT_GDEW0583T8 10
-  #define DT_WS75BWT7 11
-  #define DT_GDEW075T7BW 12
-  #define DT_GDEY075T7BW 13
-  #define DT_GDEM102T91 14
-  #define DT_GDEM1085T51 15
-  #define DT_GDEM133T91 16
+  #define DT_GDEH0576T81 8
+  #define DT_GDEY0579T93 9
+  #define DT_GDEQ0583T31 10
+  #define DT_GDEW0583T8 11
+  #define DT_WS75BWT7 12
+  #define DT_GDEW075T7BW 13
+  #define DT_GDEY075T7BW 14
+  #define DT_GDEM102T91 15
+  #define DT_GDEM1085T51 16
+  #define DT_GDEM133T91 17
   // Grayscale displays
-  #define DT_GDEY0154D67 17
-  #define DT_GDEY0213B74 18
-  #define DT_GDEW042T2_G 19
-  #define DT_GDEY042T81 20
-  #define DT_GDEQ0426T82 21
-  #define DT_GDEW075T7 22
-  #define DT_GDEY075T7 23
+  #define DT_GDEY0154D67 18
+  #define DT_GDEY0213B74 19
+  #define DT_GDEW029T5D 20
+  #define DT_GDEW042T2_G 21
+  #define DT_GDEY042T81 22
+  #define DT_GDEQ0426T82 23
+  #define DT_GDEW075T7 24
+  #define DT_GDEY075T7 25
   // 3C displays
-  #define DT_GDEY0154Z90 24
-  #define DT_WS27RBW264176 25
-  #define DT_WS42YBW400300 26
-  #define DT_GDEQ042Z21 27
-  #define DT_GDEY042Z98 28
-  #define DT_HINK_E075A01 29
-  #define DT_GDEY0579Z93 30
-  #define DT_GDEQ0583Z31 31
-  #define DT_GDEW0583C64 32
-  #define DT_GDEY075Z08 33
-  #define DT_GDEH075Z90 34
-  #define DT_GDEM102Z91 35
-  #define DT_GDEY116Z91 36
-  #define DT_GDEY1248Z51 37
-  #define DT_GDEM133Z91 38
+  #define DT_GDEY0154Z90 26
+  #define DT_WS27RBW264176 27
+  #define DT_WS42YBW400300 28
+  #define DT_GDEQ042Z21 29
+  #define DT_GDEY042Z98 30
+  #define DT_HINK_E075A01 31
+  #define DT_GDEY0579Z93 32
+  #define DT_GDEQ0583Z31 33
+  #define DT_GDEW0583C64 34
+  #define DT_GDEY075Z08 35
+  #define DT_GDEH075Z90 36
+  #define DT_GDEM102Z91 37
+  #define DT_GDEY116Z91 38
+  #define DT_GDEY1248Z51 39
+  #define DT_GDEM133Z91 40
   // 4C displays
-  #define DT_GDEM0154F51H 39
-  #define DT_GDEY0213F51 40
-  #define DT_GDEY0266F51H 41
-  #define DT_GDEY029F51H 42
-  #define DT_WS3004YRBW 43
-  #define DT_GDEM035F51 44
-  #define DT_GDEM0397F81 45
-  #define DT_GDEY0420F51 46
-  #define DT_GDEM042F52 47
-  #define DT_WS437YRBW 48
-  #define DT_GDEY0579F51 49
-  #define DT_GDEY0583F41 50
-  #define DT_GDEM075F52 51
-  #define DT_GDEM102F91 52
-  #define DT_GDEY116F51 53
-  #define DT_GDEY116F91 54
+  #define DT_GDEM0154F51H 41
+  #define DT_GDEY0213F51 42
+  #define DT_GDEY0266F51H 43
+  #define DT_GDEY029F51H 44
+  #define DT_WS3004YRBW 45
+  #define DT_GDEM035F51 46
+  #define DT_GDEM0397F81 47
+  #define DT_GDEY0420F51 48
+  #define DT_GDEM042F52 49
+  #define DT_WS437YRBW 50
+  #define DT_GDEY0579F51 51
+  #define DT_GDEY0583F41 52
+  #define DT_GDEM075F52 53
+  #define DT_GDEM102F91 54
+  #define DT_GDEY116F51 55
+  #define DT_GDEY116F91 56
   // 7C displays
-  #define DT_GDEP0565D90 55
-  #define DT_GDEY073D46 56
-  #define DT_GDEP073E01 57
+  #define DT_GDEP0565D90 57
+  #define DT_GDEY073D46 58
+  #define DT_GDEP073E01 59
   // epdiy displays (parallel interface)
   #define DT_ED097TC2_EPDIY 100
   #define DT_ED060XC3_EPDIY 101
