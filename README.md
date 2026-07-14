@@ -1,100 +1,63 @@
-# Živý obraz - firmware
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/MultiTricker/zivyobraz-fw)
+# Živý obraz — Pervasive Displays / VUSION fork
 
-Welcome to the Živý obraz repository with firmware for e-Paper development boards based on ESP32/ESP32-S3. Live Image is used to feed ePaper/e-Ink displays with image data from a web server, whether it is a PNG or a custom basic RLE format called Z1/Z2/Z3.
+Fork [zivyobraz-fw](https://github.com/MultiTricker/zivyobraz-fw) pridávajúci podporu pre Pervasive
+Displays / SES-imagotag VUSION panely — recyklované e-ink cenovky z obchodov. Všeobecné info o
+projekte, dokumentácia, inštalácia, kúpa hardvéru atď. — pozri **originálny repo vyššie**. Tu je len
+to, čo je v tomto forku iné.
 
-  * Basic information can be found on the project website: https://zivyobraz.eu/ (Czech)
-  * Specific information regarding getting things work can be found in the documentation at: https://wiki.zivyobraz.eu/ (Czech)
-  * Firmware supports many boards, you can find specific hardware for Živý obraz to buy at [LáskaKit](https://www.laskakit.cz/vyhledavani/?string=%C5%BEiv%C3%BD+obraz) and [Pájeníčko](https://pajenicko.cz/vyhledavani?search=%C5%BEiv%C3%BD%20obraz).
+Panely aj drivery pochádzajú z [GxEPD2_PervasiveDisplays](https://github.com/shanislav/GxEPD2_PervasiveDisplays)
+— tam nájdeš zapojenie, fotky a reverse-engineering poznámky k jednotlivým panelom.
 
-**The documentation also includes precompiled firmware for flashing several of the most common types of ePapers, or you can use the web installer in Edge/Chrome browsers at: https://zivyobraz.eu/?page=instalace**.
-**The default password for the Wi-Fi that the board transmits after uploading the firmware is: `zivyobraz`.**
+## Podporované panely
 
-----
+| PlatformIO env | Panel | Doska | Poznámka |
+|---|---|---|---|
+| `esp32c3_supermini_e2266` | SE2266JS0C5, 2.66" BWR | ESP32-C3 Super Mini | genuine iTC |
+| `esp32c3_supermini_e2581` | SE2581JSBF1, 5.81" BWR | ESP32-C3 Super Mini | non-iTC, reverse-engineered |
+| `esp32c3_supermini_e0g1` | SE2581JS0G1, 5.81" BWR | ESP32-C3 Super Mini | genuine iTC, iný COG než JSBF1 (rovnaká doska/veľkosť skla) |
+| `esp32s2_mini_e2969` | TE2969JS0B4, 9.7" BWR, dual-COG | Wemos/LOLIN S2 Mini | potrebuje PSRAM |
 
-In brief, about custom compilation and settings in the firmware code:
+Build: `pio run -e <env>`, flash: `pio run -e <env> -t upload`.
 
-You will need to have the following libraries installed:
-```ini
-lib_deps =
-    zinggjm/GxEPD2@^1.6.6
-    jnthas/Improv WiFi Library@^0.0.4
-    bblanchon/ArduinoJson@^7.2.1
-    adafruit/Adafruit GFX Library@^1.11.9
-    sensirion/Sensirion I2C SHT4x@^1.1.2
-    adafruit/Adafruit BME280 Library@^2.3.0
-    sparkfun/SparkFun SCD4x Arduino Library@^1.1.2
-    sensirion/Sensirion I2C STCC4@^1.0.0
-    kikuchan98/pngle@^1.1.0
-```
+## Zapojenie
 
-In **platformio.ini**, comment out default build flags under section **common** (they are specified here for automatic compilation checks on GitHub), so you can use your own display type for compilation in next steps:
-```ini
-build_flags =
-    -D COLOR_TYPE=BW      # Comment out this for your own display type enabled by you in display.h
-    -D DISPLAY_TYPE=GDEW0154T8 # Also comment out this
-```
+Piny sú v `src/board.h` pod `ESP32C3_SUPERMINI` / `ESP32S2_MINI`. Skrátene:
 
-In code **board.h** do not forget to uncomment:
-1. Type of board used (ESPink_V2, ES3ink, ...)
-2. Select connection type (http/https) which will be used for contacting the server by using `-DUSE_CLIENT_HTTP`
-or `-DUSE_CLIENT_HTTPS` compiler flag. Default value is `https` variant.
-3. **Streaming feature** is ENABLED by default for all ESP32 devices. This allows efficient buffering of image data in RAM before streaming to the display. To disable on resource-constrained devices, add `-D STREAMING_DISABLED` to your build_flags in **platformio.ini**
-4. If you plan to connect one of the supported sensors via uŠup for reading temperature, humidity, and pressure/CO2 and sending the values to the server, uncomment in **sensor.h**
-```c
-// #define SENSOR
-```
-5. Display type has to be changed in **display.h** In the case of GRAYSCALE, you must remove `zinggjm/GxEPD2` from **platformio.ini** (just comment it out), otherwise there will be a library collision and the code will not work. In that case, `lib/GxEPD2_4G` will be used. For other displays (BW, 3C, 7C), leave `zinggjm/GxEPD2` active, you don't need to do anything with the 4G version.
-```c
-#define COLOR_TYPE=BW           // black and white
-// #define COLOR_TYPE=3C        // 3 colors - black, white and red/yellow
-// #define COLOR_TYPE=GRAYSCALE // grayscale - 4 colors
-// #define COLOR_TYPE=7C        // 7 colors
-```
-6. Uncomment the definition of the specific ePaper you are putting into operation. This section begins at line `18`, and you need to select a specific display, e.g.:
-```c
-// BW
-// #define DISPLAY_TYPE=GDEY0213B7 // 122x250, 2.13"
-// #define DISPLAY_TYPE=GDEW042T2  // 400x300, 4.2"
-#define DISPLAY_TYPE=GDEW075T7     // 800x480, 7.5"
-```
+**ESP32-C3 Super Mini** (2.66", oba 5.81"): CS=10, DC=9, RST=3, BUSY=2, SCLK=6, MOSI=7,
+`ePaperPowerPin`=8 (na tejto doske bez funkcie — panel treba napájať priamo 3.3V, nie cez FET).
 
-### EPDiy parallel displays (SVERIO Paperboard)
+**Wemos S2 Mini** (9.7"): M-CS=34, S-CS=33, DC=37, RST=38, BUSY=39, SCLK=36, MOSI=35,
+`ePaperPowerPin`=40 (tag doska má vlastný MOSFET na tomto pine, active-low).
 
-For e-Paper displays with a parallel interface (e.g. ED060XC3, ED097TC2) driven by the [EPDiy](https://github.com/Pajenicko/epdiy) driver on the SVERIO Paperboard, dedicated build environments are already defined in **platformio.ini**. You do **not** need to manually edit `display.h` or `board.h` — simply select the matching environment to compile and use your display in definition.
+Panel napájanie a dátové linky potrebujú 3.3V.
 
-```ini
-[env:sverio_paperboard_epdiy]
-```
+## Čo je v tomto forku iné oproti upstream
 
-These environment automatically set:
-- `COLOR_TYPE=8G` (8-level grayscale)
-- `BOARD_TYPE=SVERIO_PAPERBOARD_EPDIY`
-- `USE_EPDIY_DRIVER` flag
-- EPDiy library dependency (`https://github.com/Pajenicko/epdiy.git`)
-- Both `GxEPD2` and `GxEPD2_4G` libraries are ignored (not needed for parallel displays)
+- Nová doska `ESP32S2_MINI` **bez `REMAP_SPI`** — 9.7" driver si SPI rieši sám (číta OTP panela
+  bit-bangom pred `SPI.begin()`); na S2 by `REMAP_SPI` túto OTP inicializáciu otrávil a panel by sa
+  zapol, ale nikdy nič nevykreslil.
+- 9.7" buffery idú do **PSRAM** (S2 Mini má 2 MB) — bez toho vyčerpá interný RAM spolu s WiFi/JSON.
+- V `main.cpp` je pre `ESP32S2_MINI` pri boote jeden `Display::clear()` navyše — 9.7" dual-COG
+  potrebuje "zahriatie" prvým refreshom, inak prvý reálny obsah (napr. WiFi setup obrazovka) vyjde
+  prázdny.
 
-If your display requires a specific VCOM voltage (might be referred on sticker placed on display), uncomment and adjust the `-D EPDIY_VCOM=1500` build flag.
+## Prvé spustenie (WiFi provisioning)
 
-After successfully compiling and flashing the board, continue with the documentation "Bringing your own ePaper to life":
-https://wiki.zivyobraz.eu/doku.php?id=start#oziveni_vlastniho_epaperu
+Po flashnutí vysiela doska vlastnú AP sieť `INK_<MAC>`, heslo `zivyobraz`. Pripoj sa na ňu **hneď**
+(nečakaj na obrazovku na paneli — najmä 9.7" má prvý refresh pomalý, cca 1–2 min aj s warm-up
+clearom). Otvorí sa captive portal, tam zadaj domácu WiFi a token zo zivyobraz.eu.
+
+## Ktorý 5.81" panel mám?
+
+`SE2581JSBF1` a `SE2581JS0G1` sú rovnako veľké, sedia na tú istú dosku, ale sú to úplne odlišné
+COG-y — vyber env podľa označenia na zadnej strane panela.
 
 ----
 
-**Simple diagram of how it works**
-
-![](how_it_works_diagram.webp)
-
-----
-
-## License info 
+## License info
 
 ![CC BY-NC-SA 4.0](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
 
-ZivyObraz FW itself is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/):
-
-Attribution—Noncommercial—Share Alike  
-✖ | Sharing without ATTRIBUTION  
-✖ | Commercial Use  
-✖ | Free Cultural Works  
-✖ | Meets Open Definition
+Rovnako ako upstream, ZivyObraz FW je licencovaný pod
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+Drivery z GxEPD2_PervasiveDisplays sú GPL-3.0.
