@@ -352,18 +352,21 @@ static constexpr const char BOARD_TYPE_STRING[] = XSTR(BOARD_TYPE);
   #define BOARD_MAX_PAGE_BUFFER_SIZE (48 * 1024)
 
 #elif defined ESP32C3_SUPERMINI
-  // Generic ESP32-C3 Super Mini, ePaper on FSPI (the only user SPI bus on C3)
+  // Generic ESP32-C3 Super Mini, ePaper on FSPI (the only user SPI bus on C3).
+  // DC and BUSY deliberately avoid the C3 strapping pins GPIO9 (BOOT) and GPIO2: with power-gating,
+  // an unpowered panel would drag a strapping pin low on cold boot and send the C3 into download
+  // mode (firmware never runs). So DC=5, BUSY=1.
   #define PIN_SS 10
-  #define PIN_DC 9
+  #define PIN_DC 5
   #define PIN_RST 3
-  #define PIN_BUSY 2
+  #define PIN_BUSY 1
   #define REMAP_SPI
   #define REMAP_SPI_BUS FSPI // C3 has no HSPI
   #define PIN_SPI_CLK 6
   #define PIN_SPI_MISO -1
   #define PIN_SPI_MOSI 7
   #define PIN_SPI_SS PIN_SS
-  #define ePaperPowerPin 8 // no power switch on this board; GPIO8 = onboard LED (unused, harmless)
+  #define ePaperPowerPin 4 // VUSION tag board's on-board MOSFET (ON/OFF test point), active-low
   #define BOARD_MAX_PAGE_BUFFER_SIZE (48 * 1024)
 
 #elif defined ESP32S2_MINI

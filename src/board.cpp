@@ -84,7 +84,8 @@ void setupHW()
 void setEPaperPowerOn(bool on)
 {
   // use HIGH/LOW notation for better readability
-#if (defined ES3ink) || (defined MakerBadge_revD) || (defined SVERIO_PAPERBOARD_SPI) || (defined ESP32S2_MINI)
+#if (defined ES3ink) || (defined MakerBadge_revD) || (defined SVERIO_PAPERBOARD_SPI) || (defined ESP32S2_MINI) ||       \
+  (defined ESP32C3_SUPERMINI)
   digitalWrite(ePaperPowerPin, on ? LOW : HIGH);
 #elif (!defined M5StackCoreInk) && (!defined SEEEDSTUDIO_RETERMINAL) && (!defined SVERIO_PAPERBOARD_EPDIY)
   digitalWrite(ePaperPowerPin, on ? HIGH : LOW);
