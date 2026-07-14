@@ -264,6 +264,35 @@ GxEPD2_3C<GxEPD2_1248c, CALC_PAGE_HEIGHT(GxEPD2_1248c::HEIGHT, GxEPD2_1248c::WID
 GxEPD2_3C<GxEPD2_1330c_GDEM133Z91, CALC_PAGE_HEIGHT(GxEPD2_1330c_GDEM133Z91::HEIGHT, GxEPD2_1330c_GDEM133Z91::WIDTH, 2)>
   display(GxEPD2_1330c_GDEM133Z91(PIN_SS, PIN_DC, PIN_RST, PIN_BUSY));
 
+// E2266JS0C - 3C, 152x296px, 2.66", Pervasive Displays BWR "Spectra" (driver in lib/GxEPD2_PD)
+#elif DISPLAY_ID == DT_E2266JS0C
+  #include <GxEPD2_266c_SE2266JS0C5.h>
+GxEPD2_3C<GxEPD2_266c_SE2266JS0C5, GxEPD2_266c_SE2266JS0C5::HEIGHT> display(GxEPD2_266c_SE2266JS0C5(PIN_SS, PIN_DC,
+                                                                                                    PIN_RST, PIN_BUSY));
+
+// 2581JSBF1 - 3C, 720x256px (radič adresuje 720x512), 5.81", Pervasive/VUSION BWR, non-iTC (driver in lib/GxEPD2_PD)
+// CALC_PAGE_HEIGHT(...,2) = stránkovanie: menší buffer, kreslí po pásoch. Nutné, lebo plný
+// 720x512 3C buffer (~92 KB) + WiFiManager vyčerpá RAM ESP32-C3 (StoreProhibited pád).
+#elif DISPLAY_ID == DT_2581JSBF1
+  #include <GxEPD2_581c_SE2581JSBF1.h>
+GxEPD2_3C<GxEPD2_581c_SE2581JSBF1, CALC_PAGE_HEIGHT(GxEPD2_581c_SE2581JSBF1::HEIGHT, GxEPD2_581c_SE2581JSBF1::WIDTH, 2)>
+  display(GxEPD2_581c_SE2581JSBF1(PIN_SS, PIN_DC, PIN_RST, PIN_BUSY));
+
+// SE2581JS0G1 - 3C, 720x256px, 5.81", Pervasive/VUSION BWR, genuine iTC variant (driver in lib/GxEPD2_PD).
+// Same glass size as 2581JSBF1 above but an unrelated COG - check the marking on the panel.
+#elif DISPLAY_ID == DT_SE2581JS0G1
+  #include <GxEPD2_581c_SE2581JS0G1.h>
+GxEPD2_3C<GxEPD2_581c_SE2581JS0G1, CALC_PAGE_HEIGHT(GxEPD2_581c_SE2581JS0G1::HEIGHT, GxEPD2_581c_SE2581JS0G1::WIDTH, 2)>
+  display(GxEPD2_581c_SE2581JS0G1(PIN_SS, PIN_DC, PIN_RST, PIN_BUSY, PIN_SPI_CLK, PIN_SPI_MOSI));
+
+// TE2969JS0B4 - 3C, 960x672px, 9.7", VUSION dual-COG BWR (driver in lib/GxEPD2_PD).
+// Two COGs -> constructor takes master CS, slave CS, plus SCK/MOSI (the driver bit-bangs the OTP).
+// The board must be ESP32S2_MINI (no REMAP_SPI): the driver owns SPI so the OTP read isn't poisoned.
+#elif DISPLAY_ID == DT_TE2969JS0B4
+  #include <GxEPD2_970c_TE2969JS0B4.h>
+GxEPD2_3C<GxEPD2_970c_TE2969JS0B4, GxEPD2_970c_TE2969JS0B4::HEIGHT / 4>
+  display(GxEPD2_970c_TE2969JS0B4(PIN_SS, PIN_CS_SLAVE, PIN_DC, PIN_RST, PIN_BUSY, PIN_SPI_CLK, PIN_SPI_MOSI));
+
 ///////////////////////
 // 4C
 ///////////////////////
@@ -420,6 +449,8 @@ void init()
   (defined CROWPANEL_ESP32S3_579) || (defined CROWPANEL_ESP32S3_42) || (defined CROWPANEL_ESP32S3_213) ||              \
   (defined SVERIO_PAPERBOARD_SPI)
   display.init(115200, false, 2, false); // S3 boards with special reset circuits
+#elif defined ESP32S2_MINI
+  display.init(115200, true, 2, false); // VUSION dual-COG on S2: verified working with this init mode
 #else
   display.init();
 #endif

@@ -25,6 +25,8 @@
 // #define BOARD_TYPE SEEEDSTUDIO_RETERMINAL // SeeedStudio reTerminal E1001/E1002
 // #define BOARD_TYPE ESP32_DEMOKIT_GOODDISPLAY // ESP32 demo kit with 4.2" ePaper display from Good Display
 // #define BOARD_TYPE ESP32L_DEVKIT_GOODDISPLAY // ESP32 Development Kit ESP32-L series with eInk Driver Board
+// #define BOARD_TYPE ESP32C3_SUPERMINI // Generic ESP32-C3 Super Mini board with SPI ePaper
+// #define BOARD_TYPE ESP32S2_MINI // Wemos/LOLIN S2 Mini with VUSION 9.7" dual-COG BWR (TE2969JS0B4)
 
 #include <Arduino.h>
 
@@ -52,6 +54,8 @@
   #define BT_SEEEDSTUDIO_RETERMINAL 18
   #define BT_ESP32_DEMOKIT_GOODDISPLAY 19
   #define BT_ESP32L_DEVKIT_GOODDISPLAY 20
+  #define BT_ESP32C3_SUPERMINI 21
+  #define BT_ESP32S2_MINI 22
 
 // Create BOARD_TYPE_STRING constant here before board type is defined
 static constexpr const char BOARD_TYPE_STRING[] = XSTR(BOARD_TYPE);
@@ -98,6 +102,10 @@ static constexpr const char BOARD_TYPE_STRING[] = XSTR(BOARD_TYPE);
     #define ESP32_DEMOKIT_GOODDISPLAY
   #elif BOARD_ID == BT_ESP32L_DEVKIT_GOODDISPLAY
     #define ESP32L_DEVKIT_GOODDISPLAY
+  #elif BOARD_ID == BT_ESP32C3_SUPERMINI
+    #define ESP32C3_SUPERMINI
+  #elif BOARD_ID == BT_ESP32S2_MINI
+    #define ESP32S2_MINI
   #else
     #pragma message("BOARD_TYPE: " XSTR(BOARD_TYPE))
     #error "BOARD_TYPE not supported!"
@@ -341,6 +349,37 @@ static constexpr const char BOARD_TYPE_STRING[] = XSTR(BOARD_TYPE);
   #define PIN_SPI_MOSI 23
   #define PIN_SPI_CLK 18
   #define ePaperPowerPin 2
+  #define BOARD_MAX_PAGE_BUFFER_SIZE (48 * 1024)
+
+#elif defined ESP32C3_SUPERMINI
+  // Generic ESP32-C3 Super Mini, ePaper on FSPI (the only user SPI bus on C3)
+  #define PIN_SS 10
+  #define PIN_DC 9
+  #define PIN_RST 3
+  #define PIN_BUSY 2
+  #define REMAP_SPI
+  #define REMAP_SPI_BUS FSPI // C3 has no HSPI
+  #define PIN_SPI_CLK 6
+  #define PIN_SPI_MISO -1
+  #define PIN_SPI_MOSI 7
+  #define PIN_SPI_SS PIN_SS
+  #define ePaperPowerPin 8 // no power switch on this board; GPIO8 = onboard LED (unused, harmless)
+  #define BOARD_MAX_PAGE_BUFFER_SIZE (48 * 1024)
+
+#elif defined ESP32S2_MINI
+  // Wemos / LOLIN S2 Mini for the VUSION 9.7" dual-COG panel (TE2969JS0B4).
+  // NO REMAP_SPI on purpose: the driver reads the panel OTP by bit-banging and calls SPI.begin()
+  // itself. On the ESP32-S2 a prior hspi.begin() on these pins poisons that read (returns 0xFF),
+  // so the OTP - and the whole init - comes out garbage. Letting the driver own SPI avoids it.
+  #define PIN_SS 34        // master CS
+  #define PIN_CS_SLAVE 33  // slave CS (second COG)
+  #define PIN_DC 37
+  #define PIN_RST 38
+  #define PIN_BUSY 39      // master BUSY
+  #define PIN_SPI_CLK 36
+  #define PIN_SPI_MOSI 35
+  #define PIN_SPI_MISO -1
+  #define ePaperPowerPin 40 // tag board's on-board MOSFET, active-low (see setEPaperPowerOn)
   #define BOARD_MAX_PAGE_BUFFER_SIZE (48 * 1024)
 #endif
 

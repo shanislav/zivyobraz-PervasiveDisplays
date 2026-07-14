@@ -84,6 +84,12 @@
 // #define DISPLAY_TYPE GDEY073D46    // 800x480, 7.3"
 // #define DISPLAY_TYPE GDEP073E01    // 800x480, 7.3"
 
+// Pervasive Displays / VUSION panels (driver in lib/GxEPD2_PD)
+// #define DISPLAY_TYPE E2266JS0C     // 152x296, 2.66", Pervasive Displays BWR "Spectra"
+// #define DISPLAY_TYPE 2581JSBF1     // 720x256 (addr 720x512), 5.81", Pervasive/VUSION BWR, non-iTC
+// #define DISPLAY_TYPE SE2581JS0G1   // 720x256, 5.81", Pervasive/VUSION BWR, genuine iTC variant
+// #define DISPLAY_TYPE TE2969JS0B4   // 960x672, 9.7", VUSION dual-COG BWR (needs S2/S3 RAM)
+
 // ...
 // More supported display classes in GxEPD2 can be found example here:
 // https://github.com/ZinggJM/GxEPD2/blob/master/examples/GxEPD2_Example/GxEPD2_display_selection.h
@@ -201,6 +207,11 @@ static constexpr const char COLOR_TYPE_STRING[] = XSTR(COLOR_TYPE);
   #define DT_GDEP0565D90 57
   #define DT_GDEY073D46 58
   #define DT_GDEP073E01 59
+  // Pervasive Displays iTC panels (3C)
+  #define DT_E2266JS0C 60
+  #define DT_2581JSBF1 61
+  #define DT_TE2969JS0B4 62
+  #define DT_SE2581JS0G1 63
   // epdiy displays (parallel interface)
   #define DT_ED097TC2_EPDIY 100
   #define DT_ED060XC3_EPDIY 101
@@ -213,7 +224,7 @@ static constexpr const char DISPLAY_TYPE_STRING[] = XSTR(DISPLAY_TYPE);
   #define DISPLAY_ID XCAT(DT_, DISPLAY_TYPE)
 
   // Validate DISPLAY_TYPE - DISPLAY_ID will be 0 if DT_<DISPLAY_TYPE> is not defined
-  #if (DISPLAY_ID < DT_GDEW0154T8 || DISPLAY_ID > DT_GDEP073E01) &&                                                    \
+  #if (DISPLAY_ID < DT_GDEW0154T8 || DISPLAY_ID > DT_SE2581JS0G1) &&                                                   \
     (DISPLAY_ID < DT_ED097TC2_EPDIY || DISPLAY_ID > DT_ED133UT2_EPDIY)
     #pragma message("DISPLAY_TYPE: " XSTR(DISPLAY_TYPE))
     #error "DISPLAY_TYPE not supported!"
