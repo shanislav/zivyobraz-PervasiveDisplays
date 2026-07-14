@@ -383,13 +383,6 @@ void setup()
 
   Board::setupHW();
 
-#if defined ESP32S2_MINI
-  // The VUSION 9.7" dual-COG needs one full refresh to "prime" before content renders reliably;
-  // without it the first content refresh (e.g. the Wi-Fi config screen) comes out blank. This warm-up
-  // clear also removes any ghosting from a previous image. See GxEPD2_970c_TE2969JS0B4.
-  Display::clear();
-#endif
-
   handleButtonActions();
 
   Utils::initializeAPIKey();
