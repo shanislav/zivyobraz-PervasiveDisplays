@@ -24,7 +24,9 @@ Build: `pio run -e <env>`, flash: `pio run -e <env> -t upload`.
 Piny sú v `src/board.h` pod `ESP32C3_SUPERMINI` / `ESP32S2_MINI`. Skrátene:
 
 **ESP32-C3 Super Mini** (2.66", oba 5.81"): CS=10, DC=9, RST=3, BUSY=2, SCLK=6, MOSI=7,
-`ePaperPowerPin`=8 (na tejto doske bez funkcie — panel treba napájať priamo 3.3V, nie cez FET).
+`ePaperPowerPin`=8. VUSION tag doska má FET zabudovaný, ale tento config ho nevyužíva — GPIO8 je
+len onboard LED na C3 dev doske, nie FET pin na tag doske. Buď si `ePaperPowerPin` preprepoj na
+skutočný FET pin tag dosky (ako pri S2 nižšie), alebo panel napájaj priamo z 3.3V.
 
 **Wemos S2 Mini** (9.7"): M-CS=34, S-CS=33, DC=37, RST=38, BUSY=39, SCLK=36, MOSI=35,
 `ePaperPowerPin`=40 (tag doska má vlastný MOSFET na tomto pine, active-low).
